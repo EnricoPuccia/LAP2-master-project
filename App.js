@@ -33,6 +33,7 @@ export default class App extends React.Component {
               title = {obj.title}
               background={obj.background}
               flexGrow = {obj.flexGrow}
+              onPress = {title=>console.log(title)}
             />
           ))}
         </View>

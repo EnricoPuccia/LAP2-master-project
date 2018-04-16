@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+.expo/packager-info.json
+.expo/settings.json
+.watchmanconfig

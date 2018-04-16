@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {  View, Text, StyleSheet } from 'react-native';
+import {  View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default class ModularButton extends Component {
     
@@ -15,9 +15,12 @@ export default class ModularButton extends Component {
     }); 
   render() {
     return (
-      <View style = {this.styles.container}>
-          <Text style = {{color: 'white'}}>{this.props.title}</Text>
-      </View>
+      <TouchableOpacity 
+        style = {this.styles.container}
+        onPress = {()=>this.props.onPress(this.props.title)}
+      >
+        <Text style = {{color: 'white'}}> {this.props.title} </Text>
+      </TouchableOpacity>
     );
   }
 }
