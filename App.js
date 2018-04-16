@@ -12,7 +12,7 @@ export default class App extends React.Component {
     super(props);
     this.state = {val: '', prevVal: '', operator: ''};
     // Necessario per evitare errore "this.state is undefined"
-    this.applyOperation = this.applyOperation.bind(this);
+    this.checkInput = this.checkInput.bind(this);
     calcButtons = require('./calcButtons.json');
   }
 
@@ -21,6 +21,8 @@ export default class App extends React.Component {
       <View style={styles.container}>
         <ResultView
           result = {this.state.val}
+          operator = {this.state.operator}
+          prevVal = {this.state.prevVal}
         />
         <View style={styles.calculator}>
           {this.renderButtons()}      
@@ -42,10 +44,10 @@ export default class App extends React.Component {
               title={obj.title}
               background={obj.background}
               flexGrow={obj.flexGrow}
-              /*  whenOnPress riceve in input "title" da onPress e lo passa ad applyOperation.
-                this.applyOperation(title) è sbagliato perché non stiamo richiamando la 
-                funzione applyOperation bensì la stiamo passando a ModularButton  */
-              whenOnPress={this.applyOperation}
+              /*  whenOnPress riceve in input "title" da onPress e lo passa ad checkInput.
+                this.checkInput(title) è sbagliato perché non stiamo richiamando la 
+                funzione checkInput bensì la stiamo passando a ModularButton  */
+              whenOnPress={this.checkInput}
             />
           ))}
         </View>
@@ -53,51 +55,102 @@ export default class App extends React.Component {
     );
   }
 
-  checkVal() {
-    if (this.state.val === '')
-      return false
-    return true
+  isNull(value) {
+    if (value === '')
+      return true
+    return false
   }
 
-  applyOperation(symbol) {
-    switch(symbol) {
+  isOperator(symbol) {
+    const operators = ['+', '-', '×', '÷', '=', '±', '%'];
+    if (operators.includes(symbol))
+      return true
+    return false
+  }
+
+  checkInput(symbol) {
+    if (symbol === 'C') {
+      this.setState({
+        prevVal: '',
+        operator: '',
+        val: ''
+      })
+      return;
+    }
+    if (symbol == '±') {
+      v = parseFloat(this.state.val);
+      v = v * (-1);
+      this.setState({
+        val: v.toString()
+      })
+      return;
+    }
+    if (this.isOperator(symbol)) {
+      this.applyOperator(symbol)
+      return;
+    }
+    this.setState({
+      val: this.state.val + symbol
+    })
+  }
+
+  getResult(operator, a, b) {
+    let c;
+    switch (operator) {
       case '+':
-        /*  Caso in cui si digita un operatore in assenza di numeri digitati prima (+)  */
-        if (!this.checkVal())
-          return;
-        /*  Caso in cui abbiamo solo val (123+) */
-        if (this.state.prevVal === '')
+        c = a + b;
+        break;
+      case '-':
+        c = a - b;
+        break;
+      case '×':
+        c =  a * b;
+        break;
+      case '÷':
+        c  = a / b;
+        break;
+    }
+    return c;
+  }
+
+  applyOperator(symbol) {
+    /*  Caso in cui si digita un operatore in assenza di numeri digitati prima (+)  */
+    if (this.isNull(this.state.val))
+      return;
+    /*  Caso in cui abbiamo solo val (123+) */
+    if (this.isNull(this.state.prevVal))
+      this.setState({
+        prevVal: this.state.val,
+        operator: symbol,
+        val: ''
+      })
+    /*  Caso in cui abbiamo prevVal, operator e Val (123+456+)  */
+    else
+      /*  Caso in cui digitiamo due o più operatori consecutivamente  */
+      if (this.isNull(this.state.val))
+        this.setState({
+          operator: symbol
+        })
+      else {
+        a = parseFloat(this.state.prevVal);
+        b = parseFloat(this.state.val);
+        
+        if (symbol == '=') {
+          c = this.getResult(this.state.operator, a, b);
           this.setState({
-            prevVal: this.state.val,
+            prevVal: '',
+            operator: '',
+            val: c
+          })
+        } else {
+          c = this.getResult(symbol, a, b);
+          this.setState({
+            prevVal: c,
             operator: symbol,
             val: ''
           })
-        /*  Caso in cui abbiamo prevVal, operator e Val (123+456+)  */
-        else 
-          /*  Caso in cui digitiamo due o più operatori consecutivamente  */
-          if (!this.checkVal())
-            this.setState({
-              operator: symbol
-            })
-          else {
-            a = parseFloat(this.state.prevVal);
-            b = parseFloat(this.state.val);
-            c = a + b;
-            this.setState({
-              prevVal: c,
-              operator: symbol,
-              val: ''
-            })
-            console.log(this.state);
-            
-          }
-            
-          break;
-      default:
-        this.setState({
-          val: this.state.val + symbol
-        })
-    }
+        }
+      }  
   }
 }
 

@@ -5,6 +5,7 @@ export default class ResultView extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text style={styles.commandRow}>{this.props.prevVal}{this.props.operator}</Text>
         <Text style={styles.resultText}>{this.props.result}</Text>
       </View>
     );
@@ -19,6 +20,12 @@ const styles = StyleSheet.create({
         //flex: 2,
         paddingTop: 20,
         height: 200,
+    },
+    commandRow: {
+      color: 'white', 
+      fontSize: 25,
+      /*  alignSelf agisce sull'asse primario, in questo caso colonne */
+      alignSelf: 'flex-start',
     },
     resultText: {
         color: 'white',
