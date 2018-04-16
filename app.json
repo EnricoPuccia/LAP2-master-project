@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "my-new-project",
+    "name": "multi-project",
     "description": "This project is really great.",
-    "slug": "my-new-project",
+    "slug": "multi-project",
     "privacy": "public",
-    "sdkVersion": "26.0.0",
+    "sdkVersion": "25.0.0",
     "platforms": ["ios", "android"],
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,12 +14,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
       "supportsTablet": true
     }
