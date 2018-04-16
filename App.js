@@ -3,13 +3,16 @@ import { StyleSheet, Text, View, TouchableNativeFeedback } from 'react-native';
 
 import ResultView from "./components/ResultView";
 import ModularButton from "./components/ModularButton";
+//import { parseFloat } from 'querystring';
 
 // import calcButtonsJSON from 'calcButtons.json';
 
 export default class App extends React.Component {
   constructor(props){
     super(props);
-    this.state = {val: null};
+    this.state = {val: '', prevVal: '', operator: ''};
+    // Necessario per evitare errore "this.state is undefined"
+    this.applyOperation = this.applyOperation.bind(this);
     calcButtons = require('./calcButtons.json');
   }
 
@@ -28,14 +31,21 @@ export default class App extends React.Component {
 
   renderButtons() {
     return (
-      calcButtons.map(list =>(
-        <View style={{flexDirection: 'row', alignItems: 'stretch', flex: 1}}>
+      calcButtons.map((list, index) =>(
+        <View 
+          key={index} 
+          style={{flexDirection: 'row', alignItems: 'stretch', flex: 1}}
+        >
           {list.map(obj => (
             <ModularButton
-              title = {obj.title}
+              key={obj.title}
+              title={obj.title}
               background={obj.background}
-              flexGrow = {obj.flexGrow}
-              whenOnPress = {title=>console.log(title)}
+              flexGrow={obj.flexGrow}
+              /*  whenOnPress riceve in input "title" da onPress e lo passa ad applyOperation.
+                this.applyOperation(title) è sbagliato perché non stiamo richiamando la 
+                funzione applyOperation bensì la stiamo passando a ModularButton  */
+              whenOnPress={this.applyOperation}
             />
           ))}
         </View>
@@ -43,7 +53,52 @@ export default class App extends React.Component {
     );
   }
 
-  
+  checkVal() {
+    if (this.state.val === '')
+      return false
+    return true
+  }
+
+  applyOperation(symbol) {
+    switch(symbol) {
+      case '+':
+        /*  Caso in cui si digita un operatore in assenza di numeri digitati prima (+)  */
+        if (!this.checkVal())
+          return;
+        /*  Caso in cui abbiamo solo val (123+) */
+        if (this.state.prevVal === '')
+          this.setState({
+            prevVal: this.state.val,
+            operator: symbol,
+            val: ''
+          })
+        /*  Caso in cui abbiamo prevVal, operator e Val (123+456+)  */
+        else 
+          /*  Caso in cui digitiamo due o più operatori consecutivamente  */
+          if (!this.checkVal())
+            this.setState({
+              operator: symbol
+            })
+          else {
+            a = parseFloat(this.state.prevVal);
+            b = parseFloat(this.state.val);
+            c = a + b;
+            this.setState({
+              prevVal: c,
+              operator: symbol,
+              val: ''
+            })
+            console.log(this.state);
+            
+          }
+            
+          break;
+      default:
+        this.setState({
+          val: this.state.val + symbol
+        })
+    }
+  }
 }
 
 const styles = StyleSheet.create({
