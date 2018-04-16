@@ -9,14 +9,15 @@ import ModularButton from "./components/ModularButton";
 export default class App extends React.Component {
   constructor(props){
     super(props);
+    this.state = {val: null};
     calcButtons = require('./calcButtons.json');
   }
+
   render() {
-    const val = 2550.8
     return (
       <View style={styles.container}>
         <ResultView
-          result = {val}
+          result = {this.state.val}
         />
         <View style={styles.calculator}>
           {this.renderButtons()}      
@@ -24,6 +25,7 @@ export default class App extends React.Component {
       </View>
     );
   }
+
   renderButtons() {
     return (
       calcButtons.map(list =>(
@@ -40,6 +42,8 @@ export default class App extends React.Component {
       ))
     );
   }
+
+  
 }
 
 const styles = StyleSheet.create({

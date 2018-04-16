@@ -18,7 +18,7 @@ export default class ModularButton extends Component {
       <TouchableOpacity 
         style = {this.styles.container}
         // Non può chiamarsi whenOnPress perchè qui usiamo la proprietà già esistente
-        onPress = {()=>this.props.onPress(this.props.title)}
+        onPress = {()=>this.props.whenOnPress(this.props.title)}
       >
         <Text style = {{color: 'white'}}> {this.props.title} </Text>
       </TouchableOpacity>
