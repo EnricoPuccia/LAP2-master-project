@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, Image, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TextInput, Button, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default class App extends React.Component {
@@ -7,7 +7,8 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       listOfTasks: [],
-      loading: true
+      loading: true,
+      //newTask: '' non ce n'è bisogno perché lo aggiunge in automatico più sotto
     }
     /* Alternativaente a rendere renderTask una arrow function:
     this.renderTask = this.renderTask.bind(this); */
@@ -26,10 +27,11 @@ export default class App extends React.Component {
             <FlatList
               data={listOfTasks}
               renderItem={this.renderTask}
+              keyExtractor={task => task.id.toString()}
               ItemSeparatorComponent={this.renderSeparator}
-              keyExtractor={task=>task.id.toString()}
+              ListHeaderComponent={this.renderHeader}
             />
-  }
+        }
       </View>
     
     );
@@ -38,9 +40,12 @@ export default class App extends React.Component {
   takeTasks() {
     try {
       const tasks = require("./data/tasks.json");
+      const lastId = Math.max(...tasks.map(t => t.id));
+      console.log(lastId);
       this.setState({
         listOfTasks: tasks,
-        loading: false
+        loading: false,
+        lastId: lastId
       })
     }
     catch (err){
@@ -78,6 +83,31 @@ export default class App extends React.Component {
       <View style={styles.separator}/>
     )
   }
+
+  renderHeader = () => {
+    return (
+      <View style={styles.header}>
+        <TextInput style={styles.text} placeholder='Add a task' onChangeText={(text)=>this.setState({newTask: text})}/>
+        <Button onPress={this.createTask} title="+"/>
+      </View>
+    )
+  }
+
+  createTask = () => {
+    console.log(this.state.newTask)
+    const task = {
+      title: this.state.newTask,
+      completed: false,
+      id: (this.state.lastId+1)
+    };
+    const listOfTasks2 = [...this.state.listOfTasks]
+    listOfTasks2.push(task);
+    console.log(listOfTasks2);
+    this.setState({
+      listOfTasks: listOfTasks2,
+      lastId: (this.state.lastId+1)
+    });
+  }
 }
 
 const styles = StyleSheet.create({
@@ -85,6 +115,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
     marginTop: 24,
+  },
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    flex: 1,
+    justifyContent: 'space-around',
+  },
+  text: {
+    width: '85%'
   },
   task: {
     flexDirection: 'row',
