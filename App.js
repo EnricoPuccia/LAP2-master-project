@@ -94,15 +94,14 @@ export default class App extends React.Component {
   }
 
   createTask = () => {
-    console.log(this.state.newTask)
     const task = {
       title: this.state.newTask,
       completed: false,
       id: (this.state.lastId+1)
     };
     const listOfTasks2 = [...this.state.listOfTasks]
+    //push l'equivalente di append
     listOfTasks2.push(task);
-    console.log(listOfTasks2);
     this.setState({
       listOfTasks: listOfTasks2,
       lastId: (this.state.lastId+1)
