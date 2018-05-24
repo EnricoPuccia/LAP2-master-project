@@ -1,6 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, Button, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Text, TextInput, Button, View, FlatList, ActivityIndicator } from 'react-native';
+
+
+import ToDoList from './components/ToDoList'
 
 export default class App extends React.Component {
   constructor(props) {
@@ -8,14 +10,12 @@ export default class App extends React.Component {
     this.state = {
       listOfTasks: [],
       loading: true,
-      //newTask: '' non ce n'è bisogno perché lo aggiunge in automatico più sotto
     }
-    /* Alternativaente a rendere renderTask una arrow function:
-    this.renderTask = this.renderTask.bind(this); */
   }
 
+  //cosa fare dopo che il componente in cui siamo viene caricato
   componentDidMount() {
-    this.takeTasks()
+    this._takeTasks()
   }
 
   render() {
@@ -24,24 +24,19 @@ export default class App extends React.Component {
       <View style={styles.container}>
         {
           loading === true ? <ActivityIndicator/> : 
-            <FlatList
-              data={listOfTasks}
-              renderItem={this.renderTask}
-              keyExtractor={task => task.id.toString()}
-              ItemSeparatorComponent={this.renderSeparator}
-              ListHeaderComponent={this.renderHeader}
-            />
+            <ToDoList data = {listOfTasks} />
         }
       </View>
     
     );
   }
 
-  takeTasks() {
+  _takeTasks() {
     try {
       const tasks = require("./data/tasks.json");
+      //la map trasforma l'array di oggetti in un array di interi (id)
       const lastId = Math.max(...tasks.map(t => t.id));
-      console.log(lastId);
+      //console.log(lastId);
       this.setState({
         listOfTasks: tasks,
         loading: false,
@@ -52,45 +47,6 @@ export default class App extends React.Component {
       console.log("something went wrong!");
       console.error(err);
     }
-  }
-
-  /* DEVE CHIAMARSI OBBLIGATORIAMENTE ITEM  
-    per capire effettuare il console.log più sotto  */
-  renderTask = ({item}) => {
-    //console.log(item)
-    const iconName = item.completed ? "ios-checkmark-circle" : "ios-checkmark-circle-outline"
-    return(
-      <TouchableOpacity style={styles.task} onPress={() => this.toggleTask(item.id)}>
-        <Ionicons style={styles.icon} name={iconName} size={24} color="skyblue"/>
-        <Text>{item.title}</Text>
-      </TouchableOpacity>
-    )
-  }
-
-  toggleTask = (id) => {
-    //Copia/spread dell'array listOfTask in modo tale da averlo fuori da state
-    const listOfTasks2 =  [...this.state.listOfTasks];
-    //L'arrow functin è necessaria perché lui non sa quale proprietà deve essere uguale a id
-    index = listOfTasks2.findIndex(t => t.id === id);
-    listOfTasks2[index].completed = !listOfTasks2[index].completed;
-    this.setState({
-      listOfTasks: listOfTasks2
-    });
-  }
-
-  renderSeparator() {
-    return(
-      <View style={styles.separator}/>
-    )
-  }
-
-  renderHeader = () => {
-    return (
-      <View style={styles.header}>
-        <TextInput style={styles.text} placeholder='Add a task' onChangeText={(text)=>this.setState({newTask: text})}/>
-        <Button onPress={this.createTask} title="+"/>
-      </View>
-    )
   }
 
   createTask = () => {
@@ -115,33 +71,6 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     marginTop: 24,
   },
-  header: {
-    flexDirection: 'row',
-    width: '100%',
-    flex: 1,
-    justifyContent: 'space-around',
-  },
-  text: {
-    width: '85%'
-  },
-  task: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 50,
-    //padding: 10
-  },
-  icon: {
-    paddingRight: 10,
-    paddingLeft: 12
-  },
-  separator: {
-    width: '90%',
-    marginLeft: '5%',
-    marginRight: '5%',
-    height: 0.5,
-    //padding: 18,
-    backgroundColor: "#1f82ad"
-  }
 });
 
 //allignItems funzione per la direzione secondaria
