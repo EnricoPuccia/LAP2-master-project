@@ -115,8 +115,22 @@ export default class ToDoList extends Component {
   _renderTask = ({item}) => {
     //console.log(item)
     return(
-        <ToDo item={item} onToggle={this._toggleTask}/>
+        <ToDo item={item} onToggle={this._toggleTask} onEdit={ () => {
+          this.props.navigation.navigate('EditToDo', {onEdit: this._onEdit, task:item})
+        }}/>
     )
+  }
+
+  _onEdit = task => {
+    //Copia/spread dell'array listOfTask in modo tale da averlo fuori da state
+    const listOfTasks2 =  [...this.state.listOfTasks];
+    //L'arrow function è necessaria perché lui non sa quale proprietà deve essere uguale a id
+    index = listOfTasks2.findIndex(t => t.id == task.id);
+    listOfTasks2[index] = task;
+    this.setState({
+        listOfTasks: listOfTasks2
+    });
+    AsyncStorage.setItem('todolist', JSON.stringify(this.state.listOfTasks));
   }
 
   _toggleTask = (id) => {
@@ -124,7 +138,7 @@ export default class ToDoList extends Component {
     const listOfTasks2 =  [...this.state.listOfTasks];
     //L'arrow function è necessaria perché lui non sa quale proprietà deve essere uguale a id
     index = listOfTasks2.findIndex(t => t.id == id);
-    listOfTasks2[index].completed = !listOfTasks2[index].completed;
+    listOfTasks2[index].done = !listOfTasks2[index].done;
     this.setState({
         listOfTasks: listOfTasks2
     });

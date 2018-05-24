@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View, Text, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default class ToDo extends Component {
   render() {
     const { item } = this.props
-    const iconName = item.completed ? "ios-checkmark-circle" : "ios-checkmark-circle-outline"
+    const iconName = item.done ? "ios-checkmark-circle" : "ios-checkmark-circle-outline"
     return(
       <TouchableOpacity style={styles.task} onPress={() => this.props.onToggle(item.id)}>
         <Ionicons style={styles.icon} name={iconName} size={24} color="deepskyblue"/>
         <Text>{item.title}</Text>
+        <TouchableHighlight onPress={() => this.props.onEdit(item)}>
+          <MaterialIcons name="chevron-right" size={24} color="black" /> 
+        </TouchableHighlight>
       </TouchableOpacity>
     )
   }
