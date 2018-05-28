@@ -5,16 +5,18 @@ import * as firebase from 'firebase';
 import ToDoList from './components/ToDoList'
 import AddToDo from './components/AddToDo'
 import EditToDo from './components/EditToDo'
+import Login from './screens/Login'
 
 // createStackNavigator restituisce un componente
 const RootStack = createStackNavigator(
   {
     ToDoList: ToDoList,
     AddToDo: AddToDo,
-    EditToDo: EditToDo
+    EditToDo: EditToDo,
+    Login: Login
   },
   {
-    initialRouteName: 'ToDoList',
+    initialRouteName: 'Login',
   }
 )
 
