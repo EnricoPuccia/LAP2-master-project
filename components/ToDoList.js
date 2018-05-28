@@ -42,20 +42,21 @@ export default class ToDoList extends Component {
   //cosa fare dopo che il componente in cui siamo viene caricato
   componentDidMount() {
     // .ref permette di spostarsi sull'oggetto passatogli come argomento
-    const todolistRef = firebase.database().ref('todolist');
+    
+    const currentUID = firebase.auth().currentUser.uid;
+    const path = 'users/' + currentUID + '/todolist';
+    this.todolistRef = firebase.database().ref(path);
     
     // .on + 'value' fa si che la funzione scritta dopo parta al cambiare di un qualcosa nella todolist nel database
-    todolistRef.on('value', snap =>{
+    this.todolistRef.on('value', snap =>{
       // Firebase accetta soltanto oggeti, ma noi vogliamo una lista in quanto più logico
       let list = [];
       snap.forEach(child => {
         list.push({...child.val(), key: child.key});
       });
-      //console.log(list);
-      const lastId = list[list.length-1].id + 1;
+      
       this.setState({
         listOfTasks: list,
-        lastId,
         loading: false
       });
     });
@@ -88,8 +89,7 @@ export default class ToDoList extends Component {
     );
   }
   _createTask = task => {
-    task.id = this.state.lastId + 1;
-    firebase.database().ref('todolist').push(task);
+    this.todolistRef.push(task);
   }
 
   _renderTask = ({item}) => {
@@ -102,20 +102,10 @@ export default class ToDoList extends Component {
   }
 
   _edit = task => {
-    /*//Copia/spread dell'array listOfTask in modo tale da averlo fuori da state
-    const listOfTasks2 =  [...this.state.listOfTasks];
-    //L'arrow function è necessaria perché lui non sa quale proprietà deve essere uguale a id
-    const index = listOfTasks2.findIndex(t => t.id == task.id);
-    listOfTasks2[index] = task;
-    this.setState({
-        listOfTasks: listOfTasks2
-    });
-    AsyncStorage.setItem('todolist', JSON.stringify(this.state.listOfTasks));*/
-    
     let updates = {}
     // updates è vuoto ma in js quando si fa riferimento a una proprietà non esistente essa viene creata
     updates[task.key] = task
-    firebase.database().ref('todolist').update(updates)
+    this.todolistRef.update(updates)
   }
 
   _toggleTask = (key) => {
@@ -123,11 +113,9 @@ export default class ToDoList extends Component {
     // noi sappiamo che ne verrà restituito uno solo e pertanto mettiamo [0]
     let updatedTask = this.state.listOfTasks.filter(el => el.key === key)[0];
     updatedTask.done = !updatedTask.done;
-    console.log(updatedTask);
     let updates = {};
     updates[key] = updatedTask;
-    console.log(updates);
-    firebase.database().ref('todolist').update(updates);
+    this.todolistRef.update(updates);
   }    
   _renderSeparator() {
     return(

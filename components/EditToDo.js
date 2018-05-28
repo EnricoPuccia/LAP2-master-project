@@ -10,7 +10,6 @@ export default class AddToDo extends Component {
     this.state={ 
       title: params.task.title,
       remindMe: params.task.remindMe || false,
-      id: params.task.id,
       done: params.task.done,
       key: params.task.key
     }
@@ -40,7 +39,6 @@ export default class AddToDo extends Component {
       title: this.state.title,
       remindMe: this.state.remindMe,
       done: this.state.done,
-      id: this.state.id,
       key: this.state.key
     }
     this.props.navigation.state.params.onEdit(item)
