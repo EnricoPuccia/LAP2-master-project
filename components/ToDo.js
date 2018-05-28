@@ -7,7 +7,7 @@ export default class ToDo extends Component {
     const { item } = this.props
     const iconName = item.done ? "ios-checkmark-circle" : "ios-checkmark-circle-outline"
     return(
-      <TouchableOpacity style={styles.task} onPress={() => this.props.onToggle(item.id)}>
+      <TouchableOpacity style={styles.task} onPress={() => this.props.onToggle(item.key)}>
         <Ionicons style={styles.icon} name={iconName} size={24} color="deepskyblue"/>
         <Text>{item.title}</Text>
         <TouchableHighlight onPress={() => this.props.onEdit(item)}>

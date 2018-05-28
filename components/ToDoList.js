@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {  FlatList, StyleSheet, View, ActivityIndicator, Button, AsyncStorage } from 'react-native';
 
+import * as firebase from 'firebase';
+
 import ToDo from './ToDo'
 
 export default class ToDoList extends Component {
@@ -34,33 +36,29 @@ export default class ToDoList extends Component {
 
   componentWillMount() {
     /* Aggiungiamo il parametro onAddTast il cui unico scopo è richiamare createTask  */
-    this.props.navigation.setParams({ onAddTask: this._createTask })
-  }
-
-  _createTask = task => {
-    //console.log(task)
-    const listOfTasks2 = [...this.state.listOfTasks]
-    //push l'equivalente di append
-    task.id = this.state.lastId+1;
-    listOfTasks2.push(task);
-    this.setState({
-      listOfTasks: listOfTasks2,
-      lastId: (this.state.lastId+1)
-    });
-    AsyncStorage.setItem('todolist', JSON.stringify(this.state.listOfTasks));
-    AsyncStorage.setItem('lastid', task.id)
+    this.props.navigation.setParams({ onAddTask: this._createTask });
   }
 
   //cosa fare dopo che il componente in cui siamo viene caricato
   componentDidMount() {
-    AsyncStorage.getItem('lastid').then(response => this.setState({
-      lastId: response ? JSON.parse(response) : 0
-    }))
-    AsyncStorage.getItem('todolist').then(response => this.setState({
-      listOfTasks: response ? JSON.parse(response) : [],
-      loading: false
-    }))
-
+    // .ref permette di spostarsi sull'oggetto passatogli come argomento
+    const todolistRef = firebase.database().ref('todolist');
+    
+    // .on + 'value' fa si che la funzione scritta dopo parta al cambiare di un qualcosa nella todolist nel database
+    todolistRef.on('value', snap =>{
+      // Firebase accetta soltanto oggeti, ma noi vogliamo una lista in quanto più logico
+      let list = [];
+      snap.forEach(child => {
+        list.push({...child.val(), key: child.key});
+      });
+      //console.log(list);
+      const lastId = list[list.length-1].id + 1;
+      this.setState({
+        listOfTasks: list,
+        lastId,
+        loading: false
+      });
+    });
   }
 
   constructor(props) {
@@ -89,60 +87,47 @@ export default class ToDoList extends Component {
     
     );
   }
-
-  _takeTasks() {
-    try {
-      const tasks = require("../data/tasks.json");
-      //la map trasforma l'array di oggetti in un array di interi (id)
-      const lastId = Math.max(...tasks.map(t => t.id));
-      //console.log(lastId);
-      this.setState({
-        listOfTasks: tasks,
-        loading: false,
-        lastId: lastId
-      })
-    }
-    catch (err){
-      console.log("something went wrong!");
-      console.error(err);
-    }
-  }
-
-  _goToAddTask = () => {
-    console.log("pressed +");
+  _createTask = task => {
+    task.id = this.state.lastId + 1;
+    firebase.database().ref('todolist').push(task);
   }
 
   _renderTask = ({item}) => {
     //console.log(item)
     return(
         <ToDo item={item} onToggle={this._toggleTask} onEdit={ () => {
-          this.props.navigation.navigate('EditToDo', {onEdit: this._onEdit, task:item})
+          this.props.navigation.navigate('EditToDo', {onEdit: this._edit, task:item})
         }}/>
     )
   }
 
-  _onEdit = task => {
-    //Copia/spread dell'array listOfTask in modo tale da averlo fuori da state
+  _edit = task => {
+    /*//Copia/spread dell'array listOfTask in modo tale da averlo fuori da state
     const listOfTasks2 =  [...this.state.listOfTasks];
     //L'arrow function è necessaria perché lui non sa quale proprietà deve essere uguale a id
-    index = listOfTasks2.findIndex(t => t.id == task.id);
+    const index = listOfTasks2.findIndex(t => t.id == task.id);
     listOfTasks2[index] = task;
     this.setState({
         listOfTasks: listOfTasks2
     });
-    AsyncStorage.setItem('todolist', JSON.stringify(this.state.listOfTasks));
+    AsyncStorage.setItem('todolist', JSON.stringify(this.state.listOfTasks));*/
+    
+    let updates = {}
+    // updates è vuoto ma in js quando si fa riferimento a una proprietà non esistente essa viene creata
+    updates[task.key] = task
+    firebase.database().ref('todolist').update(updates)
   }
 
-  _toggleTask = (id) => {
-    //Copia/spread dell'array listOfTask in modo tale da averlo fuori da state
-    const listOfTasks2 =  [...this.state.listOfTasks];
-    //L'arrow function è necessaria perché lui non sa quale proprietà deve essere uguale a id
-    index = listOfTasks2.findIndex(t => t.id == id);
-    listOfTasks2[index].done = !listOfTasks2[index].done;
-    this.setState({
-        listOfTasks: listOfTasks2
-    });
-    AsyncStorage.setItem('todolist', JSON.stringify(this.state.listOfTasks));
+  _toggleTask = (key) => {
+    // filter restituisce una lista perché più elementi potrebbero soddisfare la condizione
+    // noi sappiamo che ne verrà restituito uno solo e pertanto mettiamo [0]
+    let updatedTask = this.state.listOfTasks.filter(el => el.key === key)[0];
+    updatedTask.done = !updatedTask.done;
+    console.log(updatedTask);
+    let updates = {};
+    updates[key] = updatedTask;
+    console.log(updates);
+    firebase.database().ref('todolist').update(updates);
   }    
   _renderSeparator() {
     return(
