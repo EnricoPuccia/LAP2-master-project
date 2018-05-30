@@ -1,8 +1,8 @@
 {
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 25708,
-  "expoServerNgrokUrl": "https://88-4rk.enricopuccia.lap2master.exp.direct",
-  "packagerNgrokUrl": "https://packager.88-4rk.enricopuccia.lap2master.exp.direct",
-  "ngrokPid": 25440
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null
 }
