@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "LAP2Master",
+    "name": "lap2-master-project",
     "description": "This project is really great.",
-    "slug": "LAP2Master",
+    "slug": "lap2-master-project",
     "privacy": "public",
     "sdkVersion": "26.0.0",
     "platforms": ["ios", "android"],
