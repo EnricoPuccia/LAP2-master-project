@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "my-new-project",
+    "name": "LAP2Master",
     "description": "This project is really great.",
-    "slug": "my-new-project",
+    "slug": "LAP2Master",
     "privacy": "public",
     "sdkVersion": "26.0.0",
     "platforms": ["ios", "android"],
