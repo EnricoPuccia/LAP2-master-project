@@ -56,7 +56,7 @@ typings/
 
 # dotenv environment variables file
 .env
-.expo
+.expo/*
 .expo/packager-info.json
 .expo/settings.json
 .expo/packager-info.json
