@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {  FlatList, StyleSheet, View, ActivityIndicator, Button, AsyncStorage } from 'react-native';
+import { Header } from 'react-native-elements'
 
 import * as firebase from 'firebase';
 
@@ -18,18 +19,20 @@ export default class ToDoList extends Component {
     return ({
       title: 'To-Do list',
       //headerTitle: <TitleComponent/>, 
-      headerTintColor: 'deepskyblue',
+      headerTintColor: 'white',
       headerTitleStyle: {
         fontWeight: 'bold',
       },
       headerRight: (
-        <Button 
+        <Button style={styles.button}
           onPress = {() => 
             {
               navigation.navigate('AddToDo', {onAdd: params.onAddTask})
             }
           } 
-          title='+' />
+          title='+'
+          color='black'
+        />
       )
     })
   }
@@ -148,4 +151,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-around',
     },
+    button: {
+      color: 'black'
+    }
 })

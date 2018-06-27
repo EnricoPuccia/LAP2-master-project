@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button } from 'react-native-elements';
+import { FormLabel, FormInput, FormValidationMessage, Button, Header} from 'react-native-elements';
 import * as firebase from 'firebase';
 
-const TINT_COLOR = 'deepskyblue';
+const TINT_COLOR = '#f4511e';
 
 class Login extends Component {
   static navigationOptions = {
@@ -15,8 +15,8 @@ class Login extends Component {
     isLoginLoading: false,
     isRegisterLoading: false,
     error: '',
-    email: '',
-    password: ''
+    email: 'enrico@email.it',
+    password: '123456'
   }
 
   render() {
@@ -27,12 +27,14 @@ class Login extends Component {
           label = 'Email'
           onChangeText = {text => this.setState({email: text })}
           placeholder = 'prova@example.it'
+          value = {this.state.email}
         />
         <FormLabel>Password</FormLabel>
         <FormInput 
           label = 'Password'
           onChangeText = {text => this.setState({password: text })}
           secureTextEntry
+          value = {this.state.password}
         />
         <View style={styles.buttonRow}>
           <Button
